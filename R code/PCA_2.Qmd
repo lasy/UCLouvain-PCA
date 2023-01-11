@@ -1,0 +1,119 @@
+---
+title: "STATS110 - Fall 2022"
+subtitle: "2. Probability"
+format: pdf
+editor: visual
+---
+
+```{r}
+
+set.seed(1) # for reproducibility of the experiments
+
+```
+
+# Sample space
+
+We can define a sample space.
+
+```{r}
+coin_sample_space <- c("head","tail")
+coin_sample_space
+```
+
+> Note, in R, to assign a value to a variable, we prefer to use the assignment operator (`<-`) rather than `=`. We use the sign `=` to give values to arguments in functions (see below).
+
+We can sample from the sample space:
+
+```{r}
+sample(coin_sample_space, size = 1)
+```
+
+We can repeat the "experiment":
+
+```{r}
+sample(coin_sample_space, size = 1)
+```
+
+We can also use the argument `size` to repeat the experiment N times.
+
+```{r}
+N <- 20
+sample(coin_sample_space, size = N, replace = TRUE)
+```
+
+We can save the results in a variable so that we can manipulate it later
+
+```{r}
+sample_coin <- sample(coin_sample_space, size = N, replace = TRUE)
+```
+
+For example, we can count the number of time each outcome was found:
+
+```{r}
+table(sample_coin)
+```
+
+# Probability
+
+The probability of `head` can be obtained empirically by increasing the number of times the experiment is repeated
+
+```{r}
+N <- 1000
+sample_coin <- sample(coin_sample_space, size = N, replace = TRUE)
+is_head <- (sample_coin == "head")
+total_heads_so_far <- cumsum(is_head)
+total_toss_so_far <- 1:N
+proportion_of_heads <- total_heads_so_far/total_toss_so_far
+
+plot(
+  proportion_of_heads, pch = 16, cex = 0.5, ylim = c(0,1),
+  main = "Proportions of heads in N tosses", 
+  xlab = "Number of tosses", 
+  ylab = "Proportion of heads"
+)
+abline(h = 0.5, col = "orange", lty = 2)
+```
+
+After `r N` tosses, the proportion of heads is of `r proportion_of_heads[N]`.
+
+If we repeat the same for `N = 1000000`, we obtain:
+
+```{r}
+N <- 1000000
+sample_coin <- sample(coin_sample_space, size = N, replace = TRUE)
+is_head <- (sample_coin == "head")
+total_heads_so_far <- cumsum(is_head)
+total_toss_so_far <- 1:N
+proportion_of_heads <- total_heads_so_far/total_toss_so_far
+proportion_of_heads[N]
+```
+
+which is almost exactly 1/2.
+
+# Permutation and combination
+
+To compute permutations and combinations, the functions `factorial` and `choose` can be used.
+
+For example, if we are interested in the number of ways to select 3 our of 7 students for the role of chair, vice-chair, and secretary, we can use the `factorial` function to compute the number of permutations $P_{3,7}$.
+
+```{r}
+factorial(7)/factorial(7-3)
+```
+
+Instead, if we are interested in the number of ways to select 3 out of 7 students to attend a school meeting (the order does not matter anymore), we can use the `choose` function to compute the number of combinations:
+
+```{r}
+choose(7,3)
+```
+
+# Sampling from an unfair coin
+
+We can make the coin unfair by providing probabilities for each value of the sample space with the `prob` argument of sample.
+
+```{r}
+
+sample_unfair_coin <- 
+  sample(coin_sample_space, size = 100, prob = c(0.2, 0.8), replace = TRUE)
+table(sample_unfair_coin)
+
+```
